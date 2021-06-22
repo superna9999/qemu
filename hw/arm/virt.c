@@ -2783,7 +2783,7 @@ static void virt_machine_6_1_options(MachineClass *mc)
 {
     VirtMachineClass *vmc = VIRT_MACHINE_CLASS(OBJECT_CLASS(mc));
     /* qemu ITS was introduced with 6.1 */
-    vmc->no_tcg_its = true;
+    vmc->no_tcg_its = false; //true;
 }
 DEFINE_VIRT_MACHINE_AS_LATEST(6, 1)
 
