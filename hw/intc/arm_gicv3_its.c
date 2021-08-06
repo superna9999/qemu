@@ -112,12 +112,12 @@ static MemTxResult update_ite(GICv3ITSState *s, uint32_t eventid, uint64_t dte,
     itt_addr = (dte >> 6ULL) & ITTADDR_MASK;
     itt_addr <<= ITTADDR_SHIFT; /* 256 byte aligned */
 
-    address_space_stq_le(as, itt_addr + (eventid * sizeof(uint64_t)),
+    address_space_stq_le(as, itt_addr + (eventid * (sizeof(uint64_t) + sizeof(uint32_t))),
                          itel, MEMTXATTRS_UNSPECIFIED, &res);
 
     if (res == MEMTX_OK) {
-        address_space_stl_le(as, itt_addr + ((eventid + sizeof(uint64_t)) *
-                             sizeof(uint32_t)), iteh, MEMTXATTRS_UNSPECIFIED,
+        address_space_stl_le(as, itt_addr + (eventid * (sizeof(uint64_t) + sizeof(uint32_t))) + sizeof(uint32_t),
+			 iteh, MEMTXATTRS_UNSPECIFIED,
                              &res);
     }
    return res;
@@ -135,12 +135,11 @@ static bool get_ite(GICv3ITSState *s, uint32_t eventid, uint64_t dte,
     itt_addr = (dte >> 6ULL) & ITTADDR_MASK;
     itt_addr <<= ITTADDR_SHIFT; /* 256 byte aligned */
 
-    itel = address_space_ldq_le(as, itt_addr + (eventid * sizeof(uint64_t)),
+    itel = address_space_ldq_le(as, itt_addr + (eventid * (sizeof(uint64_t) + sizeof(uint32_t))),
                                 MEMTXATTRS_UNSPECIFIED, res);
 
     if (*res == MEMTX_OK) {
-        iteh = address_space_ldl_le(as, itt_addr + ((eventid +
-                                    sizeof(uint64_t)) * sizeof(uint32_t)),
+        iteh = address_space_ldl_le(as, itt_addr + (eventid * (sizeof(uint64_t) + sizeof(uint32_t))) + sizeof(uint32_t),
                                     MEMTXATTRS_UNSPECIFIED, res);
 
         if (*res == MEMTX_OK) {
